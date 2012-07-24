@@ -1,0 +1,3 @@
+#!/bin/sh
+
+kill `cat /var/run/vpn-over-ssh.ssh_pid`

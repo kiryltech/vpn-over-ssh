@@ -1,0 +1,26 @@
+#!/bin/sh
+
+. /etc/vpn-over-ssh/vos.conf
+
+modprobe tun
+started_ssh_processes=`pidof -s ssh |sed 's/ /,/g'`
+echo "Already starter ssh processes: $started_ssh_processes"
+ssh $host -w $local_tun:$rem_tun -f "ifconfig tun$rem_tun $rem_ip/30 pointopoint $local_ip"
+if [ -z $started_ssh_processes ]; then
+    echo "pidof -s ssh"
+    tun_pid=`pidof -s ssh`
+else
+    echo "pidof -s -o $started_ssh_processes ssh"
+    tun_pid=`pidof -s -o $started_ssh_processes ssh`
+fi
+echo "Connected, PID: $tun_pid"
+
+echo $tun_pid > /var/run/vpn-over-ssh.ssh_pid
+
+ifconfig tun$local_tun $local_ip/30 pointopoint $rem_ip
+cat /etc/vpn-over-ssh/nets | while read net
+do
+    route add -net $net gw $rem_ip
+done
+
+route
