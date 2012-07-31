@@ -3,7 +3,7 @@
 . /etc/vpn-over-ssh/vos.conf
 
 modprobe tun
-started_ssh_processes=`pidof -s ssh |sed 's/ /,/g'`
+started_ssh_processes=`pidof ssh |sed 's/ /,/g'`
 echo "Already starter ssh processes: $started_ssh_processes"
 ssh $host -w $local_tun:$rem_tun -f "ifconfig tun$rem_tun $rem_ip/30 pointopoint $local_ip"
 if [ -z $started_ssh_processes ]; then
